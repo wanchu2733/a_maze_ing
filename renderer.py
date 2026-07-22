@@ -1,7 +1,8 @@
 import a_maze_ing
 from dataclasses import dataclass
+from enum import Enum
+import time
 
-# import time
 
 # def zeige_ladebalken(gesamtschritte: int):
 #     breite = 20  # Gesamtlänge des Balkens in Zeichen
@@ -28,6 +29,9 @@ from dataclasses import dataclass
 #     print()
 
 
+class Tile(Enum):
+    NONE = 1
+
 
 @dataclass
 class Color:
@@ -48,6 +52,7 @@ class Color:
     bright_cyan: str = "\033[96m"
     bright_white: str = "\033[97m"
 
+    EMPTY: str = ""
     ERR: str = "\033[31m"
     WRN: str = "\033[33m"
     SCS: str = "\033[32m"
@@ -64,24 +69,72 @@ class Pos:
 
 
 class Blocky():
-    def __init__(self, context):
-        self.ctx = context
+    def __init__(self, context: "Renderer"):
+        self.ctx: Renderer = context
+        self.block_str: str = "!!\033[0m"
+        self.crnt_display: str = ""
+
+        for ln in range(self.ctx.maze_height + 1):
+            for ltr in range(self.ctx.maze_width * 2 - 1):
+                self.crnt_display += self.block_str
+            self.crnt_display += "\n"
+
+        self.maze_render()
+
+    def get_block_index(self, tile_pos: Pos) -> int:
+        row: int = 0
+        display_list: list[str] = self.crnt_display.split("\n")
+        for i in range(tile_pos.y):
+            row += len(display_list[i]) + 1
+
+        col: int = 0
+        row_list: list[str] = display_list[tile_pos.y].split("\033[0m")
+        for i in range(tile_pos.x):
+            col += len(row_list[i]) + 4
+
+        return row + col
+
+    def change_block(self, tile_pos: Pos, keyword: str):
+        idx: int = self.get_block_index(tile_pos)
+
+        display_list: list[str] = self.crnt_display.split("\n")
+        row_list: list[str] = display_list[tile_pos.y].split("\033[0m")
+        current_block_length = len(row_list[tile_pos.x]) + 4
+
+        color_id: str = ""
+        if keyword in self.ctx.color.keys():
+            color_id = self.ctx.color[keyword]
+
+        pre: str = self.crnt_display[:idx]
+        post: str = self.crnt_display[idx + current_block_length:]
+        self.crnt_display = pre + color_id + "██\033[0m" + post
+
+    def display(self) -> None:
+        print(self.crnt_display)
+
+    def step(self, tile_pos: Pos, keyword: str) -> None:
+        self.change_block(tile_pos, keyword)
+        print("\033c")
+        self.display()
+        time.sleep(0.01)
 
     def maze_render(self) -> None:
-        for y in range(len(self.ctx.data)):
-            if self.ctx.data[y] == "\n":
-                break
-            for x in range(len(self.ctx.data[y])):
-                self.upper_tiling(x, y)
-            print(f"{self.ctx.color['border']}██{Color.END}")
-            for x in range(len(self.ctx.data[y])):
-                self.middle_tiling(x, y)
-            print(f"{self.ctx.color['border']}██{Color.END}")
+        # for y in range(self.ctx.maze_height):
+        #     if self.ctx.data[y] == "\n":
+        #         break
+        #     for x in range(self.ctx.maze_width):
+        #         self.upper_tiling(Pos(x, y))
+        #     self.write_block(
+        #         Pos((self.ctx.maze_width - 1) * self.block_width, y),
+        #         "border"
+        #     )
+            # for x in range(self.ctx.maze_width):
+            #     self.middle_tiling(Pos(x, y))
+            # self.write_block(Pos(x, y), "border")
         i: int = 0
-        while i < len(self.ctx.data[0]) - 1:
-            print(f"{self.ctx.color['border']}████{Color.END}", end="")
+        while i < self.ctx.maze_width * 2 - 1:
+            self.step(Pos(i, self.ctx.maze_height), "border")
             i += 1
-        print(f"{self.ctx.color['border']}██{Color.END}")
 
     def upper_tiling(self, x: int, y: int) -> None:
         hexadecimal: str = "0123456789ABCDEF"
@@ -158,6 +211,8 @@ class Renderer():
             "logo": Color.bright_cyan
         }
         self.data: list[str] = []
+        self.maze_width: int = 0
+        self.maze_height: int = 0
         self.startpos: Pos = Pos(0, 0)
         self.endpos: Pos = Pos(0, 0)
         self.pathlist: dict[int, list[int]] = {}
@@ -168,6 +223,8 @@ class Renderer():
         try:
             with open("maze.txt") as file:
                 self.data = file.readlines()
+                self.maze_height = len(self.data)
+                self.maze_width = len(self.data[0])
                 self.startpos.x = int(
                     self.data[len(self.data) - 3].split(",")[0]
                 )
@@ -191,7 +248,7 @@ class Renderer():
         if not self.data:
             print("Data not found, aborting.")
             return
-        self.engine.maze_render()
+        # self.engine.maze_render()
         self.main_inputter()
 
     def main_inputter(self) -> None:
