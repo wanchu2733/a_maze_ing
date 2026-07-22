@@ -3,21 +3,21 @@ import random
 
 
 class Solver:
-    def solve(self, mg: maze_generator.MazeGenerator) -> None:
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
         print("solver from solver")
 
     @staticmethod
-    def grfl(cl: list[maze_generator.MazeGenerator.Cell]) -> int:
+    def grfl(cl: list["maze_generator.MazeGenerator.Cell"]) -> int:
         return random.randint(0, len(cl) - 1)
 
     @staticmethod
-    def _init_wall(c: maze_generator.MazeGenerator.Cell) -> None:
+    def _init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:
         c._walls = [True] * len(c._walls)
         c._visited = False
 
 
 class DFS(Solver):
-    def solve(self, mg: maze_generator.MazeGenerator) -> None:
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
         self._mg = mg
         self._mg.atac(Solver._init_wall)
         cstk = (
@@ -39,7 +39,7 @@ class DFS(Solver):
 
 
 class Prims(Solver):
-    def solve(self, mg: maze_generator.MazeGenerator) -> None:
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
         self._mg = mg
         self._mg.atac(Solver._init_wall)
         cc = self._mg.get_cell(self._mg._entryr, self._mg._entryc)

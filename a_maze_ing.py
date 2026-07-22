@@ -1,6 +1,7 @@
 import config
 import maze_generator
 import random
+import renderer
 
 
 def main() -> int:
@@ -16,3 +17,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     main()
+    renderer.Renderer()

@@ -10,7 +10,7 @@ class Config:
         self._algorithm: str = "dfs"
 
     @staticmethod
-    def load_config_1(ln: str, config: Config) -> None:
+    def load_config_1(ln: str, config: "Config") -> None:
         k, v = ln.split("=")
         an = f"_{k.strip().lower()}"
         rv = v.strip()
@@ -24,7 +24,7 @@ class Config:
             )
 
     @staticmethod
-    def load_config(path: str) -> Config:
+    def load_config(path: str) -> "Config":
         config = Config()
         try:
             with open(path) as file:
