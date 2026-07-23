@@ -1,6 +1,6 @@
 activate:
 	python3 -m venv .venv
-	.venv/bin/pip install --upgrade pip build setuptools wheel
+	.venv/bin/pip install --upgrade pip build setuptools wheel mypy
 
 build:
 	.venv/bin/python -m build --wheel
@@ -15,8 +15,7 @@ debug:
 	.venv/bin/python -m pdb a_maze_ing.py
 
 clean:
-	rm -rf .mypy_cache
-	rm -rf */__pycache__
+	rm -rf .mypy_cache */__pycache__ build/ dist/ *.egg-info
 
 lint:
 	flake8 --exclude=.venv .
@@ -25,7 +24,8 @@ lint:
 		--warn-unused-ignores \
 		--ignore-missing-imports \
 		--disallow-untyped-defs \
-		--check-untyped-defs
+		--check-untyped-defs \
+		--exclude build
 
 lint-strict:
 	flake8 --exclude=.venv .
@@ -35,4 +35,5 @@ lint-strict:
 		--ignore-missing-imports \
 		--disallow-untyped-defs \
 		--check-untyped-defs \
+		--exclude build \
 		--strict
