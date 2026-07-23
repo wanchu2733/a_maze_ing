@@ -3,21 +3,58 @@ import random
 
 
 class Solver:
+    """
+    Base class for DFS and Prims, could be ABC.
+    """
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        """Generic solve function, abstract layer
+
+        Args:
+            self: self
+            mg: the maze generator class
+
+        Returns:
+            None
+        """
         print("solver from solver")
 
     @staticmethod
     def grfl(cl: list["maze_generator.MazeGenerator.Cell"]) -> int:
+        """Get random from list, returning index
+
+        Args:
+            cl: the list of Cells to choose from
+
+        Returns:
+            the index of the choosen one
+        """
         return random.randint(0, len(cl) - 1)
 
     @staticmethod
     def _init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:
+        """Initialise walls in maze generator to all closed not visited
+
+        Args:
+            c: the maze generator cell
+
+        Returns:
+            None
+        """
         c._walls = [True] * len(c._walls)
         c._visited = False
 
 
 class DFS(Solver):
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        """Generic solve function override, solving the maze in cell
+
+        Args:
+            self: self
+            mg: the maze generator class
+
+        Returns:
+            None
+        """
         self._mg = mg
         self._mg.atac(Solver._init_wall)
         cstk = (
@@ -40,6 +77,15 @@ class DFS(Solver):
 
 class Prims(Solver):
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        """Generic solve function override, solving the maze in cell
+
+        Args:
+            self: self
+            mg: the maze generator class
+
+        Returns:
+            None
+        """
         self._mg = mg
         self._mg.atac(Solver._init_wall)
         cc = self._mg.get_cell(self._mg._entryr, self._mg._entryc)

@@ -4,12 +4,31 @@ from typing import Callable
 
 
 class MazeGenerator:
+    """
+    MazeGenerator class, all maze data needed is here
+    """
     directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
     class Cell:
+        """
+        Maze Cell class, the cell grid
+        """
         def __init__(
             self, r: int, c: int, n: bool, e: bool, s: bool, w: bool
         ) -> None:
+            """__init__ the Cell
+
+            Args:
+                r: row index
+                c: column index
+                n: north wall open close states
+                e: east wall open close states
+                s: south wall open close states
+                w: west wall open close states
+
+            Returns:
+                None
+            """
             self._r = r
             self._c = c
             self._is_42 = False
@@ -18,6 +37,14 @@ class MazeGenerator:
             self._path: list[str] = []
 
         def to_hex(self) -> str:
+            """printing the hex value of the cell
+
+            Args:
+                self: self
+
+            Returns:
+                the single hex code char
+            """
             if self._is_42:
                 return "F"
             return f"{sum(self._walls[i] << i for i in range(4)):X}"
@@ -26,6 +53,19 @@ class MazeGenerator:
         self, width: int, height: int,
         entry: list[int], exit: list[int], seed: int
     ) -> None:
+        """__init__ the Mazegenerator class
+
+        Args:
+            self: self
+            width: width of the maze
+            height: height of the maze
+            entry: entry of the maze
+            exit: exit of the maze
+            seed: seed of the maze
+
+        Returns:
+            None
+        """
         self._width = width
         self._height = height
         self._entryr = entry[1]
@@ -52,6 +92,15 @@ class MazeGenerator:
             self._draw_42_at((self._height >> 1) - 2, (self._width >> 1) - 3)
 
     def find_connection(self, c: Cell) -> Cell:
+        """find a random connection to a visited cell
+
+        Args:
+            self: self
+            c: the unvisited cell
+
+        Returns:
+            the visited cell
+        """
         lst = [
             ac for dr, dc in MazeGenerator.directions
             if (ac := self.get_cell(c._r + dr, c._c + dc)) and ac._visited
@@ -60,6 +109,16 @@ class MazeGenerator:
         return lst[i]
 
     def connect_cell(self, c1: Cell, c2: Cell) -> None:
+        """connecting the neightbouring cells
+
+        Args:
+            self: self
+            c1: the from cell
+            c2: the to cell
+
+        Returns:
+            None
+        """
         if c2._r - 1 == c1._r:
             c1._walls[2] = False
             c2._walls[0] = False
@@ -78,15 +137,43 @@ class MazeGenerator:
             c2._path = c1._path + ["W"]
 
     def connect_new_cell(self, c: Cell) -> None:
+        """connecting a unvisited cell to a visited cell
+
+        Args:
+            self: self
+            c: the new unvisited cell
+
+        Returns:
+            None
+        """
         ac = self.find_connection(c)
         self.connect_cell(ac, c)
 
     def atac(self, f: Callable[[Cell], None]) -> None:
+        """apply to all cells
+
+        Args:
+            self: self
+            f: the function to apply to all cells
+
+        Returns:
+            None
+        """
         for r in self._maze:
             for c in r:
                 f(c)
 
     def cvc(self, r: int, c: int) -> bool:
+        """check valid cell
+
+        Args:
+            self: self
+            r: the cell row index
+            c: the cell column index
+
+        Returns:
+            is valid boolean
+        """
         cc = self.get_cell(r, c)
         return not (
             r < 0 or c >= self._width or
@@ -94,6 +181,15 @@ class MazeGenerator:
             not cc or cc._visited or cc._is_42)
 
     def gnfc(self, c: Cell | None) -> list[Cell]:
+        """get next from cell
+
+        Args:
+            self: self
+            c: the current cell
+
+        Returns:
+            list of cells ready to be consumed
+        """
         return [
             cell
             for dr, dc in MazeGenerator.directions
@@ -102,6 +198,16 @@ class MazeGenerator:
         ]
 
     def get_cell(self, r: int, c: int) -> Cell | None:
+        """get a cell
+
+        Args:
+            self: self
+            r: the cell row index
+            c: the cell column index
+
+        Returns:
+            the cell if exists
+        """
         return (
             None
             if r < 0 or c < 0 or c >= self._width or r >= self._height
@@ -109,10 +215,28 @@ class MazeGenerator:
         )
 
     def generate_maze(self, alg: str) -> None:
+        """choose a solver and solve the maze
+
+        Args:
+            self: self
+            alg: the algo used to solve, must be valid
+
+        Returns:
+            None
+        """
         solver: maze_generator.algorithm.Solver = self._get_solver(alg)
         solver.solve(self)
 
     def write_maze_to_file(self, out_fp: str) -> None:
+        """write the maze to hex file
+
+        Args:
+            self: self
+            out_fp: output file path
+
+        Returns:
+            None
+        """
         data = ""
         for r in range(self._height):
             for c in range(self._width):
@@ -132,9 +256,29 @@ class MazeGenerator:
             file.write(data)
 
     def _draw_42_f(self, r: int, c: int) -> None:
+        """the function to apply to 42 cell
+
+        Args:
+            self: self
+            r: row index
+            c: column index
+
+        Returns:
+            None
+        """
         self._maze[r][c]._is_42 = True
 
     def _draw_42_at(self, r: int, c: int) -> None:
+        """draw 42 starting at row and column
+
+        Args:
+            self: self
+            r: row index
+            c: column index
+
+        Returns:
+            None
+        """
         self._draw_42_line_at(r, c, 3, False, self._draw_42_f)
         self._draw_42_line_at(r + 2, c, 3, True, self._draw_42_f)
         self._draw_42_line_at(r + 2, c + 2, 3, False, self._draw_42_f)
@@ -147,10 +291,32 @@ class MazeGenerator:
     def _draw_42_line_at(
         self, r: int, c: int, n: int, is_h: bool, f: Callable[[int, int], None]
     ) -> None:
+        """draw 42 lines at row and column
+
+        Args:
+            self: self
+            r: row index
+            c: column index
+            n: number of cells in length
+            is_h: is horizontal
+            f: function to apply to the 42 cell
+
+        Returns:
+            None
+        """
         for i in range(n):
             f(r + (0 if is_h else i), c + (i if is_h else 0))
 
     def _get_solver(self, alg: str) -> maze_generator.algorithm.Solver:
+        """get solver from alg string
+
+        Args:
+            self: self
+            alg: the algorithm in string, must be valid
+
+        Returns:
+            None
+        """
         if alg.lower() == "dfs":
             return maze_generator.algorithm.DFS()
         elif alg.lower() == "prims":

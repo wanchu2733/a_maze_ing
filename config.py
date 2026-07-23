@@ -11,6 +11,15 @@ class Config:
 
     @staticmethod
     def load_config_1(ln: str, config: "Config") -> None:
+        """Load config helper
+
+        Args:
+            ln: config line, must be valid
+            config: the config content to write to
+
+        Returns:
+            None
+        """
         k, v = ln.split("=")
         an = f"_{k.strip().lower()}"
         rv = v.strip()
@@ -25,6 +34,14 @@ class Config:
 
     @staticmethod
     def load_config(path: str) -> "Config":
+        """Load config from path
+
+        Args:
+            path: the path to config file, default config.txt
+
+        Returns:
+            Config
+        """
         config = Config()
         try:
             with open(path) as file:
