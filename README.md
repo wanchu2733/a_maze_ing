@@ -4,9 +4,11 @@ _This project has been created as part of the 42 curriculum by wchu, ldreger._
 [This project](https://projects.intra.42.fr/projects/a-maze-ing) creates a maze with an entry and exit point, finds the shortest path to the exit and displays it.
 
 # Instructions
+Please use venv in Python 3.14.0
 
 ## Makefile
 This project uses a Makefile for execution. The following rules may be used:
+- `build`:       Building the whl to dist folder
 - `install`:     Not applicable to this project. It would install needed dependencies using `pip`.
 - `run`:         Executes the program.
 - `debug`:       Runs the program in debug mode using `-m pdb`.
@@ -22,6 +24,7 @@ To gain an understanding of concepts such as Depth First Search, we used website
 Generative AI (namely [Gemini](https://gemini.google.com/)) was used to gain a deeper understanding of the python syntax and python functions.
 
 # Details
+
 
 ### Config File
 The `config.txt` file is formatted as follows:
@@ -47,8 +50,12 @@ ALGORITHM=dfs
 ```
 
 ### Generation Algorithm
+dfs. Depth-First Search (DFS) explores a maze by going as deep as possible along each path before backtracking when hitting dead ends.
+
+prims. Randomized Prim’s generates a maze by starting at one cell and continually picking a random wall from its growing border (frontier) to carve into unvisited space, creating a natural, highly branched layout.
 
 ### Reusability
+maze_generator is a standalone module able to be built to dis/maze_generator-xxx.whl and can be installed via pip install
 
 ### Project Management
 Seeing that this is a group project, it was not possible for every group member to do everything.

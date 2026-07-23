@@ -1,0 +1,56 @@
+import maze_generator
+import random
+
+
+class Solver:
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        print("solver from solver")
+
+    @staticmethod
+    def grfl(cl: list["maze_generator.MazeGenerator.Cell"]) -> int:
+        return random.randint(0, len(cl) - 1)
+
+    @staticmethod
+    def _init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:
+        c._walls = [True] * len(c._walls)
+        c._visited = False
+
+
+class DFS(Solver):
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        self._mg = mg
+        self._mg.atac(Solver._init_wall)
+        cstk = (
+            [r for _ in [0] if (
+                r := self._mg.get_cell(self._mg._entryr, self._mg._entryc)
+            ) is not None]
+        )
+        cstk[0]._visited = True
+        while len(cstk) > 0:
+            nb = self._mg.gnfc(cstk[-1])
+            if len(nb) == 0:
+                cstk.pop()
+                continue
+            i = self.grfl(nb)
+            sc = nb[i]
+            sc._visited = True
+            self._mg.connect_cell(cstk[-1], sc)
+            cstk.append(sc)
+
+
+class Prims(Solver):
+    def solve(self, mg: "maze_generator.MazeGenerator") -> None:
+        self._mg = mg
+        self._mg.atac(Solver._init_wall)
+        cc = self._mg.get_cell(self._mg._entryr, self._mg._entryc)
+        if not cc:
+            return
+        ft = self._mg.gnfc(cc)
+        cc._visited = True
+        while len(ft) > 0:
+            i = self.grfl(ft)
+            sc = ft.pop(i)
+            sc._visited = True
+            self._mg.connect_new_cell(sc)
+            nft = self._mg.gnfc(sc)
+            ft.extend(set(nft) - set(ft))

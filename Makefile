@@ -1,11 +1,18 @@
+activate:
+	python3 -m venv .venv
+	.venv/bin/pip install --upgrade pip build setuptools wheel
+
+build:
+	.venv/bin/python -m build --wheel
+
 install:
-	pip install maze_generator-0.0.0.whl
+	.venv/bin/pip install dist/maze_generator-0.0.0-py3-none-any.whl
 
 run:
-	python3 a_maze_ing.py
+	.venv/bin/python a_maze_ing.py
 
 debug:
-	python3 -m pdb a_maze_ing.py
+	.venv/bin/python -m pdb a_maze_ing.py
 
 clean:
 	rm -rf .mypy_cache
@@ -13,7 +20,7 @@ clean:
 
 lint:
 	flake8 --exclude=.venv .
-	python3 -m mypy . \
+	.venv/bin/python -m mypy . \
 		--warn-return-any \
 		--warn-unused-ignores \
 		--ignore-missing-imports \
@@ -22,7 +29,7 @@ lint:
 
 lint-strict:
 	flake8 --exclude=.venv .
-	python3 -m mypy . \
+	.venv/bin/python -m mypy . \
 		--warn-return-any \
 		--warn-unused-ignores \
 		--ignore-missing-imports \
