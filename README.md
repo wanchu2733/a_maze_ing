@@ -4,12 +4,13 @@ _This project has been created as part of the 42 curriculum by wchu, ldreger._
 [This project](https://projects.intra.42.fr/projects/a-maze-ing) creates a maze with an entry and exit point, finds the shortest path to the exit and displays it.
 
 # Instructions
-Please use venv in Python 3.14.0
+Please use venv
 
 ## Makefile
 This project uses a Makefile for execution. The following rules may be used:
+- `activate`:    Setting up venv to start with
 - `build`:       Building the whl to dist folder
-- `install`:     Not applicable to this project. It would install needed dependencies using `pip`.
+- `install`:     Install maze_generator-0.0.0-py3-none-any.whl as an example in dist folder
 - `run`:         Executes the program.
 - `debug`:       Runs the program in debug mode using `-m pdb`.
 - `clean`:       Deletes `.mypy_cache` files and `__pycache__` folders.
