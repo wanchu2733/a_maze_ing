@@ -37,7 +37,7 @@ class Inputter():
             match choice:
                 case "1":
                     self.feedback_msg = (f"{Color.SCS}Generating new maze "
-                                         f"from config.txt...{Color.END}")
+                                         f"from config file...{Color.END}")
                     self.ctx.is_path_drawing = False
                     self.ctx.pipeline.is_anim = True
                     self.menu_state = MenuState.main

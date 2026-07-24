@@ -11,9 +11,14 @@ class Config:
         self._output_file: str | None = None
         self._perfect: bool | None = None
         self._seed: int | None = None
-        self._algorithm: str = "dfs"
+        self._algorithm: str | None = None
 
     def is_pass_fail(self) -> str:
+        """Checks if any attributes were not set in config file
+
+        Returns:
+            str: "" on success, len(str) > 0 for error
+        """
         if self._width is None or self._height is None:
             return ("Missing width or height:\n"
                     "Width and height must have a value.")
@@ -78,6 +83,11 @@ class Config:
             return ("Invalid Perfect Boolean:\n"
                     "Perfect must have a valid boolean value "
                     "(e.g. 'false', 'yes', '0', ...).")
+
+        assert self._algorithm is not None
+        if not (self._algorithm == "dfs" or self._algorithm == "prims"):
+            return ("Invalid Generation Algorithm:\n"
+                    "Algorithm must be recognized ('dfs', 'prims').")
 
         return ""
 

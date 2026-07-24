@@ -42,10 +42,10 @@ class Solver:
         """
         c._walls = [True] * len(c._walls)
         c._visited = False
-    
+
     @staticmethod
     def _fsp_init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:
-        """Initialise find shortest path walls in maze generator to all closed not visited
+        """Initialise find shortest path walls in maze generator to not visited
 
         Args:
             c: the maze generator cell
@@ -81,7 +81,7 @@ class Solver:
                 nft.extend(nfc)
             ft.extend(set(nft) - set(ft))
             nft = []
-        
+
 
 class DFS(Solver):
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:
