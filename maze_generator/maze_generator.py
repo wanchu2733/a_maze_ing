@@ -49,6 +49,9 @@ class MazeGenerator:
                 return "F"
             return f"{sum(self._walls[i] << i for i in range(4)):X}"
 
+        def __str__(self) -> str:
+            return f"c[{self._r},{self._c}]"
+
     def __init__(
         self, width: int, height: int,
         entry: list[int], exit: list[int], seed: int
@@ -88,6 +91,21 @@ class MazeGenerator:
         ]
         if self._width >= 9 and self._height >= 6:
             self._draw_42_at((self._height >> 1) - 2, (self._width >> 1) - 3)
+    
+    def nde(self) -> None:
+        """no dead end? ok, no dead end now
+
+        Args:
+            self: self
+
+        Returns:
+            the visited cell
+        """
+        for r in self._maze:
+            for c in r:
+                if not c._is_42 and sum(c._walls) > 2:
+                    self.connect_cell(c, self.find_connection(c))
+        algorithm.Solver.fsp(self)
 
     def find_connection(self, c: Cell) -> Cell:
         """find a random connection to a visited cell
@@ -177,6 +195,50 @@ class MazeGenerator:
             r < 0 or c >= self._width or
             c < 0 or r >= self._height or
             not cc or cc._visited or cc._is_42)
+    
+    def fsp_cvc(self, c1: Cell, c2: Cell) -> bool:
+        """find shortest path check valid cell
+
+        Args:
+            self: self
+            c1: cell from
+            c2: cell to
+
+        Returns:
+            is valid boolean
+        """
+
+        if c1 is None or c2 is None or c2._visited:
+            return False
+        if c2._r - 1 == c1._r and c1._walls[2] == False and c2._walls[0] == False:
+            c2._path = c1._path + ["S"]
+            return True
+        elif c2._r + 1 == c1._r and c1._walls[0] == False and c2._walls[2] == False:
+            c2._path = c1._path + ["N"]
+            return True
+        elif c2._c - 1 == c1._c and c1._walls[1] == False and c2._walls[3] == False:
+            c2._path = c1._path + ["E"]
+            return True
+        elif c2._c + 1 == c1._c and c1._walls[3] == False and c2._walls[1] == False:
+            c2._path = c1._path + ["W"]
+            return True
+        return False
+    
+    def fsp_gnfc(self, c: Cell | None) -> list[Cell]:
+        """find shortest path get next from cell
+
+        Args:
+            self: self
+            c: the current cell
+
+        Returns:
+            list of cells ready to be consumed
+        """
+        return [
+            cell
+            for dr, dc in MazeGenerator.directions
+            if c and self.fsp_cvc(c, (cell := self.get_cell(c._r + dr, c._c + dc)))
+        ]
 
     def gnfc(self, c: Cell | None) -> list[Cell]:
         """get next from cell

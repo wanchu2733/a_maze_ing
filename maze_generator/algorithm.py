@@ -42,7 +42,46 @@ class Solver:
         """
         c._walls = [True] * len(c._walls)
         c._visited = False
+    
+    @staticmethod
+    def _fsp_init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:
+        """Initialise find shortest path walls in maze generator to all closed not visited
 
+        Args:
+            c: the maze generator cell
+
+        Returns:
+            None
+        """
+        c._visited = False
+        c._path = []
+
+    @staticmethod
+    def fsp(mg: "maze_generator.MazeGenerator") -> None:
+        """Find shortest path and store in cell._path
+
+        Args:
+            mg: maze_generator.MazeGenerator
+
+        Returns:
+            None
+        """
+        mg.atac(Solver._fsp_init_wall)
+        cc = mg.get_cell(mg._entryr, mg._entryc)
+        if not cc:
+            return
+        ft = [cc]
+        nft = []
+        cc._visited = True
+        while len(ft):
+            while len(ft):
+                sc = ft.pop(0)
+                sc._visited = True
+                nfc = mg.fsp_gnfc(sc)
+                nft.extend(nfc)
+            ft.extend(set(nft) - set(ft))
+            nft = []
+        
 
 class DFS(Solver):
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:

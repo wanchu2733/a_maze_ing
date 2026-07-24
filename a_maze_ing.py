@@ -29,8 +29,9 @@ def main(is_new_render: bool = True) -> int:
     assert c._algorithm is not None
     mg.generate_maze(c._algorithm)
     assert c._output_file is not None
-    mg.write_maze_to_file(c._output_file)
-
+    if not c._perfect:
+        mg.nde()
+    mg.write_maze_to_file(c._output_file) 
     if is_new_render:
         r = maze_display.renderer.Renderer(c._output_file)
         if c._width < 9 or c._height < 6:
