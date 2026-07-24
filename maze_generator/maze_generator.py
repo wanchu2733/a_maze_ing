@@ -104,8 +104,29 @@ class MazeGenerator:
         for r in self._maze:
             for c in r:
                 if not c._is_42 and sum(c._walls) > 2:
-                    self.connect_cell(c, self.find_connection(c))
+                    cn = self.nde_find_connection(c)
+                    if cn:
+                        self.connect_cell(c, cn)
         algorithm.Solver.fsp(self)
+    
+    def nde_find_connection(self, c: Cell) -> Cell | None:
+        """find a random connection to a visited cell
+
+        Args:
+            self: self
+            c: the unvisited cell
+
+        Returns:
+            the visited cell
+        """
+        lst = [
+            ac for dr, dc in MazeGenerator.directions
+            if (ac := self.get_cell(c._r + dr, c._c + dc)) and not ac._is_42 and not self.nde_cvc(c, ac)
+        ]
+        if len(lst):
+            return lst[0]
+        else:
+            return None
 
     def find_connection(self, c: Cell) -> Cell:
         """find a random connection to a visited cell
@@ -119,7 +140,7 @@ class MazeGenerator:
         """
         lst = [
             ac for dr, dc in MazeGenerator.directions
-            if (ac := self.get_cell(c._r + dr, c._c + dc)) and ac._visited
+            if (ac := self.get_cell(c._r + dr, c._c + dc)) and ac._visited and not ac._is_42
         ]
         i = algorithm.Solver.grfl(lst)
         return lst[i]
@@ -221,6 +242,30 @@ class MazeGenerator:
             return True
         elif c2._c + 1 == c1._c and c1._walls[3] == False and c2._walls[1] == False:
             c2._path = c1._path + ["W"]
+            return True
+        return False
+
+    def nde_cvc(self, c1: Cell, c2: Cell) -> bool:
+        """find shortest path check valid cell
+
+        Args:
+            self: self
+            c1: cell from
+            c2: cell to
+
+        Returns:
+            is valid boolean
+        """
+
+        if c1 is None or c2 is None:
+            return False
+        if c2._r - 1 == c1._r and c1._walls[2] == False and c2._walls[0] == False:
+            return True
+        elif c2._r + 1 == c1._r and c1._walls[0] == False and c2._walls[2] == False:
+            return True
+        elif c2._c - 1 == c1._c and c1._walls[1] == False and c2._walls[3] == False:
+            return True
+        elif c2._c + 1 == c1._c and c1._walls[3] == False and c2._walls[1] == False:
             return True
         return False
     
