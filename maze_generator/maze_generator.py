@@ -1,6 +1,7 @@
 from maze_generator import algorithm
 import maze_generator.algorithm
 from typing import Callable
+import random
 
 
 class MazeGenerator:
@@ -51,6 +52,20 @@ class MazeGenerator:
 
         def __str__(self) -> str:
             return f"c[{self._r},{self._c}]"
+    
+    def get_ani(self, cool: bool = True) -> list[tuple[int, int, str]]:
+        """get animation here, make sure you already generated the maze
+
+        Args:
+            cool: do you want a cooler animation? then don't set it to false
+
+        Returns:
+            [(row_index: int, column_index: int, new_hex_code: str), ...]
+
+        """
+        if cool:
+            random.shuffle(self._ani) 
+        return self._ani
 
     def __init__(
         self, width: int, height: int,
@@ -76,6 +91,7 @@ class MazeGenerator:
         self._exitr = exit[1]
         self._exitc = exit[0]
         self._seed = seed
+        self._ani = []
         self._maze = [
             [
                 MazeGenerator.Cell(
@@ -174,6 +190,8 @@ class MazeGenerator:
             c1._walls[3] = False
             c2._walls[1] = False
             c2._path = c1._path + ["W"]
+        self._ani.append((c1._r, c1._c, c1.to_hex()))
+        self._ani.append((c2._r, c2._c, c2.to_hex()))
 
     def connect_new_cell(self, c: Cell) -> None:
         """connecting a unvisited cell to a visited cell
