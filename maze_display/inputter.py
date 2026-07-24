@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class Inputter():
-    def __init__(self, context):
+    def __init__(self, context: Renderer):
         self.ctx: Renderer = context
 
         self.feedback_msg: str = ""
@@ -25,6 +25,8 @@ class Inputter():
             Customize maze,
             Quit
         """
+        if self.is_quitting:
+            return
         print("=== A-Maze-ing ===")
         print(f"{Color.LES}1. Re-generate a new maze{Color.END}")
         print(f"{Color.LES}2. Show / Hide the shortest path{Color.END}")
@@ -39,7 +41,7 @@ class Inputter():
                     self.ctx.is_path_drawing = False
                     self.ctx.pipeline.is_anim = True
                     self.menu_state = MenuState.main
-                    a_maze_ing.main()
+                    a_maze_ing.main(False)
                     self.ctx.main_render()
                     break
                 case "2":

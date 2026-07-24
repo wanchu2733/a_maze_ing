@@ -86,9 +86,7 @@ class MazeGenerator:
             ]
             for r in range(self._height)
         ]
-        if self._width < 9 or self._height < 6:
-            print("too small, no 42")
-        else:
+        if self._width >= 9 and self._height >= 6:
             self._draw_42_at((self._height >> 1) - 2, (self._width >> 1) - 3)
 
     def find_connection(self, c: Cell) -> Cell:

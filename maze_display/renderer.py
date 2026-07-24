@@ -4,7 +4,7 @@ import maze_display.inputter as inputter
 
 
 class Renderer():
-    def __init__(self):
+    def __init__(self, file_name: str):
         self.color: dict[str, str] = {
             "background": Color.black,
             "border": Color.bright_white,
@@ -25,7 +25,7 @@ class Renderer():
         self.is_path_drawing: bool = False
 
         try:
-            with open("maze.txt") as file:
+            with open(file_name) as file:
                 self.data = file.readlines()
                 for ln in range(len(self.data)):
                     if self.data[ln] == "\n":
@@ -49,9 +49,8 @@ class Renderer():
             print(f"{Color.ERR}Data not found, aborting.{Color.END}")
             return
 
-        self.pipeline: pipeline.Pipeline = pipeline.BlockyPipeline(self)
+        self.pipeline: pipeline.BlockyPipeline = pipeline.BlockyPipeline(self)
         self.inputter: inputter.Inputter = inputter.Inputter(self)
-        self.main_render()
 
     def main_render(self) -> None:
         """Renders maze, draws path, and returns control to user"""
