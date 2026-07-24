@@ -8,16 +8,17 @@ Please use venv
 
 ## Makefile
 This project uses a Makefile for execution. The following rules may be used:
-- `activate`:    Setting up venv to start with
-- `build`:       Building the whl to dist folder
-- `install`:     Install maze_generator-0.0.0-py3-none-any.whl as an example in dist folder
 - `run`:         Executes the program.
 - `debug`:       Runs the program in debug mode using `-m pdb`.
+- `activate`:    Setting up venv to start with
+- `deactivate`:    Deleting venv to clean up
+- `build`:       Building the whl to dist folder
+- `install`:     Install maze_generator-0.0.0-py3-none-any.whl as an example in dist folder
 - `clean`:       Deletes `.mypy_cache` files and `__pycache__` folders.
 - `lint`:        Checks for norme compliance.
 - `lint-strict`: Checks for norme compliance in strict mode.
 
-Rules can be run by the command `make [rule]`.
+Rules can be run by the command `make [rule]`. It is recommended to use venv (`make activate`) for mypy functionality.
 
 # Resources
 To gain an understanding of concepts such as Depth First Search, we used websites such as [GeeksforGeeks](https://www.geeksforgeeks.org/).
@@ -26,15 +27,14 @@ Generative AI (namely [Gemini](https://gemini.google.com/)) was used to gain a d
 
 # Details
 
-
 ### Config File
 The `config.txt` file is formatted as follows:
 ```bash
 # Lines starting with the '#' character are ignored
 
-# Width of maze
+# Width of maze (must be above 0)
 WIDTH=30
-# Height of maze
+# Height of maze (must be above 0)
 HEIGHT=20
 # Tile position of search entry (must fall within bounds)
 ENTRY=12,18
@@ -42,11 +42,11 @@ ENTRY=12,18
 EXIT=2,9
 # Name of the output file
 OUTPUT_FILE=maze.txt
-# True if there is one path to the exit, False if multiple may exist
+# 'True' if there is one path to the exit, 'False' if multiple may exist
 PERFECT=True
-# Seed used to generate maze layout
+# Seed used to generate maze layout (must be an int)
 SEED=1
-# Algorithm used to get to result
+# Algorithm used to get to result (either 'dfs' or 'prims')
 ALGORITHM=dfs
 ```
 
