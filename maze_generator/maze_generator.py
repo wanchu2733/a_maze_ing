@@ -1,4 +1,4 @@
-from maze_generator import algorithm
+# from maze_generator import algorithm
 import maze_generator.algorithm
 from typing import Callable
 import random
@@ -125,7 +125,7 @@ class MazeGenerator:
                     cn = self.nde_find_connection(c)
                     if cn:
                         self.connect_cell(c, cn)
-        algorithm.Solver.fsp(self)
+        self.solver.fsp(self)
 
     def nde_find_connection(self, c: Cell) -> Cell | None:
         """find a random connection to a visited cell
@@ -162,7 +162,7 @@ class MazeGenerator:
             if (ac := self.get_cell(c._r + dr, c._c + dc)) and ac._visited
             and not ac._is_42
         ]
-        i = algorithm.Solver.grfl(lst)
+        i = self.solver.grfl(lst)
         return lst[i]
 
     def connect_cell(self, c1: Cell, c2: Cell) -> None:
@@ -361,8 +361,9 @@ class MazeGenerator:
         Returns:
             None
         """
-        solver: maze_generator.algorithm.Solver = self._get_solver(alg)
-        solver.solve(self)
+        self.solver = self._get_solver(alg)
+        # solver: maze_generator.algorithm.Solver = self._get_solver(alg)
+        self.solver.solve(self)
 
     def write_maze_to_file(self, out_fp: str) -> None:
         """write the maze to hex file

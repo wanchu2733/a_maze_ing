@@ -9,10 +9,12 @@ class MenuState(Enum):
         main: The main menu screen.
         title: The title menu screen when re-setting color.
         color: The color screen only showing after the title screen.
+        respeed: The animation speed adjust screen.
     """
     main = 1
     tile = 2
     color = 3
+    respeed = 4
 
 
 @dataclass

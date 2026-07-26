@@ -1,12 +1,13 @@
 import config
 import maze_generator
-# import random
 import maze_display.renderer
 from maze_display.structures import Color
 import sys
 
 
-def generate_output(seed: int | None = None) -> config.Config | None:
+def generate_output(
+        seed: int | None = None
+        ) -> tuple[config.Config | None, list[tuple] | None]:
     """Opens config file, passes value, results in output file
 
     Returns:
@@ -15,14 +16,14 @@ def generate_output(seed: int | None = None) -> config.Config | None:
     if len(sys.argv) != 2:
         print(f"{Color.ERR}No config file found. ",
               f"Provide it as an argument{Color.END}")
-        return None
+        return (None, None)
     c = config.Config.load_config(sys.argv[1])
     if not c:
         print(f"{Color.ERR}'{sys.argv[1]}' file not found.{Color.END}")
-        return None
+        return (None, None)
     if c.is_pass_fail():
         print(f"{Color.ERR}{c.is_pass_fail()}{Color.END}")
-        return None
+        return (None, None)
 
     if seed is not None:
         c._seed = seed
@@ -34,7 +35,7 @@ def generate_output(seed: int | None = None) -> config.Config | None:
     )
     if c.is_invalid(mg):
         print(f"{Color.ERR}{c.is_invalid(mg)}{Color.END}")
-        return None
+        return (None, None)
 
     assert c._algorithm is not None
     mg.generate_maze(c._algorithm)
@@ -43,7 +44,7 @@ def generate_output(seed: int | None = None) -> config.Config | None:
         mg.nde()
     mg.write_maze_to_file(c._output_file)
 
-    return c
+    return (c, mg._ani)
 
 
 def main() -> int:
@@ -52,15 +53,16 @@ def main() -> int:
     Returns:
         int: 0 for successful exit, 1 for error.
     """
-    c = generate_output()
+    c, ani = generate_output()
     if not c:
         return 1
 
     try:
-        r = maze_display.renderer.Renderer(c._output_file)
+        r = maze_display.renderer.Renderer(c._output_file, ani)
         if c._width < 9 or c._height < 6:
             r.inputter.feedback_msg = (f"{Color.LES}Maze is too small: "
-                                       f"Skipping 42 logo.{Color.END}")
+                                       f"Skipping 42 logo.{Color.END} ")
+        r.inputter.feedback_msg += (f"{Color.LES}(SEED: {c._seed}){Color.END}")
         r.main_render()
     except FileNotFoundError:
         print(f"{Color.ERR}Data not found, aborting.{Color.END}")

@@ -4,10 +4,11 @@ import maze_display.inputter as inputter
 
 
 class Renderer():
-    def __init__(self, output_name: str):
+    def __init__(self, output_name: str, ani: list[tuple]):
         self.color: dict[str, str] = {
             "background": Color.black,
-            "border": Color.bright_white,
+            # "border": Color.bright_white,
+            "border": Color.cyan,
             "wall": Color.white,
             "start": Color.magenta,
             "exit": Color.blue,
@@ -16,11 +17,12 @@ class Renderer():
         }
 
         self.output_name: str = output_name
+        self.ani: list[tuple] = ani
         self.data: list[str] = []
         self.maze_width: int = 0
         self.maze_height: int = 0
         self.startpos: Pos = Pos(0, 0)
-        self.endpos: Pos = Pos(0, 0)
+        self.exitpos: Pos = Pos(0, 0)
         self.pathdict: dict[int, list[int]] = {}
         self.pathlist: list[Pos] = []
         self.is_show_path: bool = True
@@ -32,6 +34,10 @@ class Renderer():
         self.inputter: inputter.Inputter = inputter.Inputter(self)
 
     def read_output(self) -> None:
+        """Reads data from the output file and saves it as attributes
+
+        Note that this does not have file not found handling.
+        """
         with open(self.output_name) as file:
             self.data = file.readlines()
             self.maze_height = 0
@@ -42,14 +48,16 @@ class Renderer():
             self.maze_width = len(self.data[0])
             self.startpos.x = int(self.data[len(self.data) - 3].split(",")[0])
             self.startpos.y = int(self.data[len(self.data) - 3].split(",")[1])
-            self.endpos.x = int(self.data[len(self.data) - 2].split(",")[0])
-            self.endpos.y = int(self.data[len(self.data) - 2].split(",")[1])
+            self.exitpos.x = int(self.data[len(self.data) - 2].split(",")[0])
+            self.exitpos.y = int(self.data[len(self.data) - 2].split(",")[1])
             self.fill_pathdata(self.data[len(self.data) - 1])
 
     def main_render(self) -> None:
         """Renders maze, draws path, and returns control to user"""
+        self.pipeline.crnt_step = 0
         self.pipeline.reserve_space()
-        self.pipeline.maze_render()
+        self.pipeline.add_logo_color()
+        self.pipeline.gen_render()
         if self.is_show_path:
             self.pipeline.draw_path()
         self.pipeline.display(False)

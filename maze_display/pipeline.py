@@ -8,14 +8,14 @@ if TYPE_CHECKING:
 
 
 class Pipeline():
-    def __init__(self, context: "Renderer", block_width: int):
+    def __init__(self, context: Renderer, block_width: int):
         self.ctx: Renderer = context
         self._block_width: int = block_width
 
-        self._default_block_str: str = self.ctx.color["background"]
-        for space in range(self._block_width):
-            self._default_block_str += "█"
-        self._default_block_str += "\x1b[0m"
+        self._border_block_str: str = f"{self.ctx.color["border"]}██\x1b[0m"
+        self._wall_block_str: str = f"{self.ctx.color["wall"]}██\x1b[0m"
+        self._start_block_str: str = f"{self.ctx.color["start"]}██\x1b[0m"
+        self._exit_block_str: str = f"{self.ctx.color["exit"]}██\x1b[0m"
         self._maze_str: str = ""
 
         self.is_anim: bool = True
@@ -30,9 +30,24 @@ class Pipeline():
         """
         self._maze_str = ""
         for ln in range(self.ctx.maze_height * 2 + 1):
-            for ltr in range(self.ctx.maze_width * 2 - 1):
-                self._maze_str += self._default_block_str
+            if ln == 0 or ln == self.ctx.maze_height * 2:
+                for ltr in range(self.ctx.maze_width * 2 - 1):
+                    self._maze_str += self._border_block_str
+            else:
+                for ltr in range(self.ctx.maze_width * 2 - 1):
+                    if ltr == 0 or ltr == self.ctx.maze_width * 2 - 2:
+                        self._maze_str += self._border_block_str
+                    else:
+                        self._maze_str += self._wall_block_str
             self._maze_str += "\n"
+
+    def add_logo_color(self) -> None:
+        for y in range(self.ctx.maze_height):
+            if self.ctx.data[y] == "\n":
+                break
+            for x in range(self.ctx.maze_width):
+                if (self.ctx.data[y][x] == "F"):
+                    self.set_block(Pos(x * 2 + 1, y * 2 + 1), "logo")
 
     def get_block(self, tile_pos: Pos) -> int:
         """Gets the index position of _maze_str matching tile_pos.
@@ -99,6 +114,8 @@ class Pipeline():
                 self.ctx.inputter.tile_menu()
             case MenuState.color:
                 self.ctx.inputter.color_menu()
+            case MenuState.respeed:
+                self.ctx.inputter.respeed_menu()
 
     def step(self, tile_pos: Pos, keyword: str, is_wait: bool = True) -> None:
         """Recolors a tile, displays, and possibly waits.
@@ -112,7 +129,7 @@ class Pipeline():
         self.crnt_step += 1
         self.set_block(tile_pos, keyword)
         self.display(is_wait)
-        if self.is_anim:
+        if self.is_anim and self.anim_speed > 0:
             time.sleep(self.anim_speed)
 
     def is_path(self, tile_pos: Pos) -> bool:
@@ -131,6 +148,30 @@ class Pipeline():
 class BlockyPipeline(Pipeline):
     def __init__(self, context: "Renderer"):
         super().__init__(context, 2)
+
+    def gen_render(self) -> None:
+        for update in self.ctx.ani:
+            self.update_tile(Pos(update[1], update[0]), update[2])
+
+    def update_tile(self, tile_pos: Pos, hex: str) -> None:
+        hexadecimal: str = "0123456789ABCDEF"
+        block_pos: Pos = Pos(tile_pos.x * 2 + 1, tile_pos.y * 2 + 1)
+
+        if self.ctx.startpos == tile_pos:
+            self.step(Pos(block_pos.x, block_pos.y), "start")
+        elif self.ctx.exitpos == tile_pos:
+            self.step(Pos(block_pos.x, block_pos.y), "exit")
+        else:
+            self.step(Pos(block_pos.x, block_pos.y), "background")
+
+        if not (hexadecimal.index(hex) & 0b0001):
+            self.step(Pos(block_pos.x, block_pos.y - 1), "background")
+        if not (hexadecimal.index(hex) & 0b0010):
+            self.step(Pos(block_pos.x + 1, block_pos.y), "background")
+        if not (hexadecimal.index(hex) & 0b0100):
+            self.step(Pos(block_pos.x, block_pos.y + 1), "background")
+        if not (hexadecimal.index(hex) & 0b1000):
+            self.step(Pos(block_pos.x - 1, block_pos.y), "background")
 
     def maze_render(self) -> None:
         """Draws maze line by line, tile by tile."""
@@ -227,8 +268,8 @@ class BlockyPipeline(Pipeline):
         ):
             self.step(block_pos, "start")
         elif (
-            tile_pos.x == self.ctx.endpos.x
-            and tile_pos.y == self.ctx.endpos.y
+            tile_pos.x == self.ctx.exitpos.x
+            and tile_pos.y == self.ctx.exitpos.y
         ):
             self.step(block_pos, "exit")
         elif (

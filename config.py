@@ -41,6 +41,15 @@ class Config:
         return ""
 
     def is_invalid(self, maze_gen: MazeGenerator) -> str:
+        """Checks if provided values make sense
+
+        Args:
+            maze_gen (MazeGenerator): Maze class to check if entry/exit
+                falls into logo
+
+        Returns:
+            str: "" on success, len(str) > 0 for error
+        """
         assert self._width is not None
         assert self._height is not None
         if self._width <= 0 or self._height <= 0:
