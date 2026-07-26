@@ -52,7 +52,7 @@ class MazeGenerator:
 
         def __str__(self) -> str:
             return f"c[{self._r},{self._c}]"
-    
+
     def get_ani(self, cool: bool = True) -> list[tuple[int, int, str]]:
         """get animation here, make sure you already generated the maze
 
@@ -64,7 +64,7 @@ class MazeGenerator:
 
         """
         if cool:
-            random.shuffle(self._ani) 
+            self.rng.shuffle(self._ani)
         return self._ani
 
     def __init__(
@@ -91,6 +91,7 @@ class MazeGenerator:
         self._exitr = exit[1]
         self._exitc = exit[0]
         self._seed = seed
+        self.rng = random.Random(self._seed)
         self._ani = []
         self._maze = [
             [
@@ -105,6 +106,7 @@ class MazeGenerator:
             ]
             for r in range(self._height)
         ]
+        self.solver: maze_generator.algorithm.Solver
         if self._width >= 9 and self._height >= 6:
             self._draw_42_at((self._height >> 1) - 2, (self._width >> 1) - 3)
 
@@ -453,7 +455,7 @@ class MazeGenerator:
             None
         """
         if alg.lower() == "dfs":
-            return maze_generator.algorithm.DFS()
+            return maze_generator.algorithm.DFS(self.rng)
         elif alg.lower() == "prims":
-            return maze_generator.algorithm.Prims()
+            return maze_generator.algorithm.Prims(self.rng)
         raise ValueError("bad algorithm")

@@ -15,7 +15,7 @@ class Pipeline():
         self._default_block_str: str = self.ctx.color["background"]
         for space in range(self._block_width):
             self._default_block_str += "█"
-        self._default_block_str += "\033[0m"
+        self._default_block_str += "\x1b[0m"
         self._maze_str: str = ""
 
         self.is_anim: bool = True
@@ -25,7 +25,7 @@ class Pipeline():
     def reserve_space(self) -> None:
         """Fills _maze_str with correct amount of lines and spaces.
 
-        One block is prefilled with "██\\033[0m",
+        One block is prefilled with "██\\x1b[0m",
         each line is delimited by "\\n".
         """
         self._maze_str = ""
@@ -49,9 +49,9 @@ class Pipeline():
             row += len(display_list[i]) + 1
 
         col: int = 0
-        row_list: list[str] = display_list[tile_pos.y].split("\033[0m")
+        row_list: list[str] = display_list[tile_pos.y].split("\x1b[0m")
         for i in range(tile_pos.x):
-            col += len(row_list[i]) + len("\033[0m")
+            col += len(row_list[i]) + len("\x1b[0m")
 
         return row + col
 
@@ -65,7 +65,7 @@ class Pipeline():
         idx: int = self.get_block(tile_pos)
 
         display_list: list[str] = self._maze_str.split("\n")
-        row_list: list[str] = display_list[tile_pos.y].split("\033[0m")
+        row_list: list[str] = display_list[tile_pos.y].split("\x1b[0m")
         prev_block_len = len(row_list[tile_pos.x])
 
         color_id: str = ""
@@ -76,20 +76,20 @@ class Pipeline():
         post: str = self._maze_str[idx + prev_block_len:]
         self._maze_str = pre + color_id + "██" + post
 
-    def display(self, is_dummy: bool = True) -> None:
+    def display(self, is_wait: bool = True) -> None:
         """Clears screen, draws maze, feedback message, and menu.
 
         Args:
-            is_dummy (bool, optional): Whether to display dummy (waiting) menu.
+            is_wait (bool, optional): Whether to display waiting menu.
                 Defaults to True.
         """
-        print("\033c", end="")
+        print("\x1bc\x1b[3J", end="")
         print(self._maze_str)
         print(self.ctx.inputter.feedback_msg)
         if self.ctx.inputter.is_quitting:
             return
-        if is_dummy:
-            self.ctx.inputter.dummy_menu(self.crnt_step // 20 % 4)
+        if is_wait:
+            self.ctx.inputter.wait_menu(self.crnt_step // 20 % 4)
             return
 
         match self.ctx.inputter.menu_state:
@@ -100,18 +100,18 @@ class Pipeline():
             case MenuState.color:
                 self.ctx.inputter.color_menu()
 
-    def step(self, tile_pos: Pos, keyword: str, is_dummy: bool = True) -> None:
+    def step(self, tile_pos: Pos, keyword: str, is_wait: bool = True) -> None:
         """Recolors a tile, displays, and possibly waits.
 
         Args:
             tile_pos (Pos): Position of tile to re-color.
             keyword (str): Color to set tile to.
-            is_dummy (bool, optional): her to display dummy (waiting) menu.
+            is_wait (bool, optional): her to display waiting menu.
                 Defaults to True.
         """
         self.crnt_step += 1
         self.set_block(tile_pos, keyword)
-        self.display(is_dummy)
+        self.display(is_wait)
         if self.is_anim:
             time.sleep(self.anim_speed)
 

@@ -3,9 +3,11 @@ import random
 
 
 class Solver:
-    """
-    Base class for DFS and Prims, could be ABC.
-    """
+    """Base class for DFS and Prims, could be ABC."""
+
+    def __init__(self, rng: random.Random):
+        self.rng = rng
+
     def solve(self, mg: "maze_generator.MazeGenerator") -> None:
         """Generic solve function, abstract layer
 
@@ -18,8 +20,7 @@ class Solver:
         """
         print("solver from solver")
 
-    @staticmethod
-    def grfl(cl: list["maze_generator.MazeGenerator.Cell"]) -> int:
+    def grfl(self, cl: list["maze_generator.MazeGenerator.Cell"]) -> int:
         """Get random from list, returning index
 
         Args:
@@ -28,7 +29,7 @@ class Solver:
         Returns:
             the index of the choosen one
         """
-        return random.randint(0, len(cl) - 1)
+        return self.rng.randint(0, len(cl) - 1)
 
     @staticmethod
     def _init_wall(c: "maze_generator.MazeGenerator.Cell") -> None:

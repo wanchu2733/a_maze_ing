@@ -41,7 +41,8 @@ class Inputter():
                     self.ctx.is_path_drawing = False
                     self.ctx.pipeline.is_anim = True
                     self.menu_state = MenuState.main
-                    a_maze_ing.main(False)
+                    a_maze_ing.generate_output(1)
+                    self.ctx.read_output()
                     self.ctx.main_render()
                     break
                 case "2":
@@ -69,7 +70,7 @@ class Inputter():
                     self.ctx.pipeline.is_anim = False
                     self.is_quitting = True
                     self.ctx.main_render()
-                    return
+                    break
                 case _:
                     self.feedback_msg = (f"{Color.ERR}Unrecognized input. "
                                          f"Try again.{Color.END}")
@@ -222,7 +223,7 @@ class Inputter():
         self.menu_state = MenuState.color
         self.ctx.main_render()
 
-    def dummy_menu(self, dot_count: int) -> None:
+    def wait_menu(self, dot_count: int) -> None:
         """Displays a waiting string instead of a menu.
 
         Args:

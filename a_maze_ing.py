@@ -1,45 +1,41 @@
 import config
 import maze_generator
-import random
+# import random
 import maze_display.renderer
 from maze_display.structures import Color
 import sys
 
 
-def main(is_new_render: bool = True) -> int:
-    """Opens config file, passes values, generates maze, displays.
-
-    Args:
-        is_new_render (bool, optional): Whether to create a new
-            Renderer class or not. Defaults to True.
+def generate_output(seed: int | None = None) -> config.Config | None:
+    """Opens config file, passes value, results in output file
 
     Returns:
-        int: 0 for successful exit, 1 for error.
+        config.Config: Config class with config file data
     """
     if len(sys.argv) != 2:
         print(f"{Color.ERR}No config file found. ",
               f"Provide it as an argument{Color.END}")
-        return 1
+        return None
     c = config.Config.load_config(sys.argv[1])
     if not c:
         print(f"{Color.ERR}'{sys.argv[1]}' file not found.{Color.END}")
-        return 1
+        return None
     if c.is_pass_fail():
         print(f"{Color.ERR}{c.is_pass_fail()}{Color.END}")
-        return 1
+        return None
 
-    random.seed(c._seed)
-    assert c._width is not None
-    assert c._height is not None
-    assert c._entry is not None
-    assert c._exit is not None
+    if seed is not None:
+        c._seed = seed
+    assert c._width is not None and c._height is not None
+    assert c._entry is not None and c._exit is not None
     assert c._seed is not None
     mg = maze_generator.MazeGenerator(
         c._width, c._height, c._entry, c._exit, c._seed
     )
     if c.is_invalid(mg):
         print(f"{Color.ERR}{c.is_invalid(mg)}{Color.END}")
-        return 1
+        return None
+
     assert c._algorithm is not None
     mg.generate_maze(c._algorithm)
     assert c._output_file is not None
@@ -47,12 +43,28 @@ def main(is_new_render: bool = True) -> int:
         mg.nde()
     mg.write_maze_to_file(c._output_file)
 
-    if is_new_render:
+    return c
+
+
+def main() -> int:
+    """Generates maze and solution, displays it.
+
+    Returns:
+        int: 0 for successful exit, 1 for error.
+    """
+    c = generate_output()
+    if not c:
+        return 1
+
+    try:
         r = maze_display.renderer.Renderer(c._output_file)
         if c._width < 9 or c._height < 6:
             r.inputter.feedback_msg = (f"{Color.LES}Maze is too small: "
                                        f"Skipping 42 logo.{Color.END}")
         r.main_render()
+    except FileNotFoundError:
+        print(f"{Color.ERR}Data not found, aborting.{Color.END}")
+
     return 0
 
 
