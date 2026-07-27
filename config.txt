@@ -1,8 +1,29 @@
-WIDTH=20
-HEIGHT=20
-ENTRY=19,19
-EXIT=0,0
-OUTPUT_FILE=maze.txt
-PERFECT=False
-SEED=67
-ALGORITHM=dfs
+# === Default Configuration === #
+
+# '<int>' Dimensions (>0)
+    # Note: No 42 logo when width < 9 and height < 6.
+width       = 10
+height      = 10
+
+# '<int>,<int>' Tile Coordinates (>-1, <bounds)
+    # Note: These are 0-indexed.
+entry       = 0, 0
+exit        = 9, 9
+
+# '<str>' Solution File Name
+    # Note: Contains tile walls in hexadecimal notation (0x[W][S][E][N])
+    # Note: Contains entry, exit and solution string (e.g. 'SEESENNW')
+output_file = maze.txt
+
+# 'False|No|0 or True|Yes|1' Dead-Ends Possibility
+    # Note: Big mazes will have at least 2 dead-ends because of the 42 logo
+perfect     = True
+
+# '<int>' Generation Seed
+    # Note: Any re-generations will pick a random seed.
+seed        = 67
+
+# 'dfs or prims' Generation algorithm
+    # Note: 'Depth-First Search' uses one main branch
+    # Note: 'Prim's Algorithm' uses
+algorithm   = dfs

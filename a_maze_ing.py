@@ -7,7 +7,7 @@ import sys
 
 def generate_output(
         seed: int | None = None
-        ) -> tuple[config.Config | None, list[tuple] | None]:
+        ) -> tuple[config.Config | None, list[tuple[int, int, str]] | None]:
     """Opens config file, passes value, results in output file
 
     Returns:
@@ -19,7 +19,6 @@ def generate_output(
         return (None, None)
     c = config.Config.load_config(sys.argv[1])
     if not c:
-        print(f"{Color.ERR}'{sys.argv[1]}' file not found.{Color.END}")
         return (None, None)
     if c.is_pass_fail():
         print(f"{Color.ERR}{c.is_pass_fail()}{Color.END}")
@@ -39,9 +38,9 @@ def generate_output(
 
     assert c._algorithm is not None
     mg.generate_maze(c._algorithm)
-    assert c._output_file is not None
     if not c._perfect:
         mg.nde()
+    assert c._output_file is not None
     mg.write_maze_to_file(c._output_file)
 
     return (c, mg._ani)
@@ -54,11 +53,13 @@ def main() -> int:
         int: 0 for successful exit, 1 for error.
     """
     c, ani = generate_output()
-    if not c:
+    if not c or not ani:
         return 1
 
     try:
+        assert c._output_file is not None and ani is not None
         r = maze_display.renderer.Renderer(c._output_file, ani)
+        assert c._width is not None and c._height is not None
         if c._width < 9 or c._height < 6:
             r.inputter.feedback_msg = (f"{Color.LES}Maze is too small: "
                                        f"Skipping 42 logo.{Color.END} ")

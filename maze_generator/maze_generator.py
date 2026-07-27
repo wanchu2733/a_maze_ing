@@ -87,12 +87,20 @@ class MazeGenerator:
         self._width = width
         self._height = height
         self._entryr = entry[1]
+        if self._entryr >= self._height or self._entryr < 0:
+            raise ValueError()
         self._entryc = entry[0]
+        if self._entryc >= self._width or self._entryc < 0:
+            raise ValueError()
         self._exitr = exit[1]
+        if self._exitr >= self._height or self._exitr < 0:
+            raise ValueError()
         self._exitc = exit[0]
+        if self._exitc >= self._width or self._exitc < 0:
+            raise ValueError()
         self._seed = seed
         self.rng = random.Random(self._seed)
-        self._ani = []
+        self._ani: list[tuple[int, int, str]] = []
         self._maze = [
             [
                 MazeGenerator.Cell(
@@ -459,4 +467,4 @@ class MazeGenerator:
             return maze_generator.algorithm.DFS(self.rng)
         elif alg.lower() == "prims":
             return maze_generator.algorithm.Prims(self.rng)
-        raise ValueError("bad algorithm")
+        raise ValueError("Algorithm not supported.")

@@ -36,7 +36,16 @@ class Inputter():
         print(f"{Color.LES}4. Adjust animation speed{Color.END}")
         print(f"{Color.LES}5. Quit{Color.END}")
         while 1:
-            choice = input(f"{Color.SRT}Choice? (1-5): {Color.END}")
+            try:
+                choice = input(f"{Color.SRT}Choice? (1-5): {Color.END}")
+            except (KeyboardInterrupt, EOFError):
+                self.feedback_msg = (
+                    f"{Color.ERR}Keyboard interrupt, "
+                    f"aborting.{Color.END}"
+                )
+                self.ctx.inputter.is_quitting = True
+                self.ctx.pipeline.display(False)
+                return
             match choice:
                 case "1":
                     seed: int = random.randint(-999999, 999999)
@@ -44,10 +53,11 @@ class Inputter():
                                          f"(SEED: {seed}){Color.END}")
                     self.ctx.pipeline.is_anim = True
                     self.menu_state = MenuState.main
-                    c: config.Config
+                    c: config.Config | None
                     c, self.ctx.ani = a_maze_ing.generate_output(seed)
-                    if not c:
-                        return 1
+                    if not c or not self.ctx.ani:
+                        return
+                    assert c._output_file is not None
                     self.ctx.output_name = c._output_file
                     try:
                         self.ctx.read_output()
@@ -123,7 +133,17 @@ class Inputter():
         print(f"{Color.LES}7. Logo Color{Color.END}")
         print(f"{Color.LES}8. Go Back{Color.END}")
 
-        choice = input(f"{Color.SRT}Choice? (1-8): {Color.END}")
+        try:
+            choice = input(f"{Color.SRT}Choice? (1-8): {Color.END}")
+        except (KeyboardInterrupt, EOFError):
+            self.feedback_msg = (
+                f"{Color.ERR}Keyboard interrupt, "
+                f"aborting.{Color.END}"
+            )
+            self.ctx.inputter.is_quitting = True
+            self.menu_state = MenuState.main
+            self.ctx.pipeline.display(False)
+            return
         match choice:
             case "1":
                 self.tile_target = "background"
@@ -191,8 +211,20 @@ class Inputter():
         print(f"{Color.bright_white}██{Color.END} "
               f"{Color.LES}16. Bright White{Color.END}")
         print(f"{Color.LES}17. Go Back{Color.END}")
+
         chosen_color: str = ""
-        choice = input(f"{Color.SRT}Choice? (1-17): {Color.END}")
+        try:
+            choice = input(f"{Color.SRT}Choice? (1-17): {Color.END}")
+        except (KeyboardInterrupt, EOFError):
+            self.feedback_msg = (
+                f"{Color.ERR}Keyboard interrupt, "
+                f"aborting.{Color.END}"
+            )
+            self.ctx.inputter.is_quitting = True
+            self.menu_state = MenuState.main
+            self.ctx.pipeline.display(False)
+            return
+
         match choice:
             case "1":
                 chosen_color = "black"
@@ -249,7 +281,17 @@ class Inputter():
     def respeed_menu(self) -> None:
         """Displays animation speed adjust menu."""
         print("=== A-Maze-ing ===")
-        choice = input(f"{Color.SRT}New speed? ('q' to quit): {Color.END}")
+        try:
+            choice = input(f"{Color.SRT}New speed? ('q' to quit): {Color.END}")
+        except (KeyboardInterrupt, EOFError):
+            self.feedback_msg = (
+                f"{Color.ERR}Keyboard interrupt, "
+                f"aborting.{Color.END}"
+            )
+            self.ctx.inputter.is_quitting = True
+            self.menu_state = MenuState.main
+            self.ctx.pipeline.display(False)
+            return
 
         if choice.lower() == "q":
             self.feedback_msg = ""

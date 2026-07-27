@@ -4,11 +4,10 @@ import maze_display.inputter as inputter
 
 
 class Renderer():
-    def __init__(self, output_name: str, ani: list[tuple]):
+    def __init__(self, output_name: str, ani: list[tuple[int, int, str]]):
         self.color: dict[str, str] = {
             "background": Color.black,
-            # "border": Color.bright_white,
-            "border": Color.cyan,
+            "border": Color.bright_white,
             "wall": Color.white,
             "start": Color.magenta,
             "exit": Color.blue,
@@ -17,7 +16,7 @@ class Renderer():
         }
 
         self.output_name: str = output_name
-        self.ani: list[tuple] = ani
+        self.ani: list[tuple[int, int, str]] | None = ani
         self.data: list[str] = []
         self.maze_width: int = 0
         self.maze_height: int = 0
@@ -58,6 +57,8 @@ class Renderer():
         self.pipeline.reserve_space()
         self.pipeline.add_logo_color()
         self.pipeline.gen_render()
+        if self.inputter.is_quitting:
+            return
         if self.is_show_path:
             self.pipeline.draw_path()
         self.pipeline.display(False)

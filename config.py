@@ -1,5 +1,6 @@
 from typing import Optional
 from maze_generator import MazeGenerator
+from maze_display.structures import Color
 
 
 class Config:
@@ -137,8 +138,10 @@ class Config:
                     setattr(config, an, [int(n) for n in rv.split(",")])
                 except ValueError:
                     return
-            else:
+            elif an in ("_output_file", "_algorithm"):
                 setattr(config, an, rv)
+        else:
+            raise KeyError(f"Key \"{k.strip()}\" not recognized.")
 
     @staticmethod
     def load_config(path: str) -> Optional["Config"]:
@@ -155,9 +158,15 @@ class Config:
             with open(path) as file:
                 data = file.readlines()
                 for ln in data:
-                    if not ln or ln.startswith("#"):
+                    if not ln or ln.strip().startswith("#"):
                         continue
-                    Config.load_config_1(ln, config)
+                    try:
+                        Config.load_config_1(ln, config)
+                    except KeyError as e:
+                        print(f"{Color.ERR}Error when passing config file: "
+                              f"{e}{Color.END}")
+                        return None
         except FileNotFoundError:
+            print(f"{Color.ERR}'{path}' file not found.{Color.END}")
             return None
         return config
