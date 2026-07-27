@@ -65,7 +65,7 @@ def main() -> int:
                                        f"Skipping 42 logo.{Color.END} ")
         r.inputter.feedback_msg += (f"{Color.LES}(SEED: {c._seed}){Color.END}")
         r.main_render()
-    except FileNotFoundError:
+    except (FileNotFoundError, PermissionError, IsADirectoryError):
         print(f"{Color.ERR}Data not found, aborting.{Color.END}")
 
     return 0

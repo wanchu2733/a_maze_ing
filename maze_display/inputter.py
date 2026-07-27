@@ -61,7 +61,8 @@ class Inputter():
                     self.ctx.output_name = c._output_file
                     try:
                         self.ctx.read_output()
-                    except FileNotFoundError:
+                    except (FileNotFoundError, PermissionError,
+                            IsADirectoryError):
                         print(f"{Color.ERR}Data not found, "
                               f"aborting.{Color.END}")
                         return

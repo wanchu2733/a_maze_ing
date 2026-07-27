@@ -166,7 +166,7 @@ class Config:
                         print(f"{Color.ERR}Error when passing config file: "
                               f"{e}{Color.END}")
                         return None
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError, IsADirectoryError):
             print(f"{Color.ERR}'{path}' file not found.{Color.END}")
             return None
         return config
