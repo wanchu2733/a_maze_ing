@@ -19,7 +19,7 @@ build:
 	$(PYTHON) -m build --wheel
 
 install: build
-	$(PIP) install dist/mazegen-0.0.0-py3-none-any.whl
+	$(PIP) install dist/mazegen-*.whl
 
 clean:
 	rm -rf .mypy_cache __pycache__ */__pycache__ build/ dist/ *.egg-info
