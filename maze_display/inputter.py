@@ -298,6 +298,7 @@ class Inputter():
             self.feedback_msg = ""
             self.menu_state = MenuState.main
             self.ctx.pipeline.display(False)
+            return
 
         try:
             self.ctx.pipeline.anim_speed = float(choice)
