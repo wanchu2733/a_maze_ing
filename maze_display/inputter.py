@@ -301,7 +301,7 @@ class Inputter():
             return
 
         try:
-            self.ctx.pipeline.anim_speed = float(choice)
+            self.ctx.pipeline.anim_speed = min(float(choice), 10.0)
         except ValueError:
             self.feedback_msg = (f"{Color.ERR}Not a float. "
                                  f"Try again.{Color.END}")
