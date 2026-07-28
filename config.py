@@ -105,6 +105,7 @@ class Config:
         Returns:
             str: "" on success, len(str) > 0 for error
         """
+        assert self._entry is not None and self._exit is not None
         if maze_gen._maze[self._entry[1]][self._entry[0]]._is_42:
             return ("Invalid Entry Coordinates:\n"
                     "Entry coords may not fall on 42 logo.")
