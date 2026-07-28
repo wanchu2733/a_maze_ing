@@ -13,7 +13,7 @@ This project uses a Makefile for execution. The following rules may be used:
 - `activate`:    Setting up venv to start with
 - `deactivate`:  Deleting venv to clean up
 - `build`:       Building the whl to dist folder
-- `install`:     Install maze_generator-0.0.0-py3-none-any.whl as an example in dist folder
+- `install`:     Builds and installs mazegen-1.0.0-py3-none-any.whl as an example in dist folder
 - `clean`:       Deletes artifacts, such as `.mypy_cache` files and `__pycache__` folders.
 - `lint`:        Checks for norme compliance.
 - `lint-strict`: Checks for norme compliance in strict mode.
@@ -28,21 +28,42 @@ Generative AI (namely [Gemini](https://gemini.google.com/)) was used to gain a d
 # Details
 
 ### Config File
-The configuration file has the following key value pairs (all of which are required):
-```bash
-# Lines starting with the '#' character are ignored
+The configuration file holds info on how the maze should generate. This is done using mandatory key-value-pairs: `width`, `height`, `entry`, `exit`, `output_file`, `perfect`, `seed`, and `algorithm`. No other keys are accepted.
 
-WIDTH=30
-HEIGHT=20
-ENTRY=12,18
-EXIT=2,9
-OUTPUT_FILE=maze.txt
-PERFECT=True
-SEED=1
-ALGORITHM=dfs
+The default configuration file (`config.txt`) holds usage information:
+```bash
+# === Default Configuration === #
+
+# '<int>' Dimensions (>0)
+    # Note: No 42 logo when width < 9 and height < 6.
+width       = 10
+height      = 10
+
+# '<int>,<int>' Tile Coordinates (>-1, <bounds)
+    # Note: These are 0-indexed.
+entry       = 0, 0
+exit        = 9, 9
+
+# '<str>' Solution File Name
+    # Note: Contains tile walls in hexadecimal notation (0x[W][S][E][N])
+    # Note: Contains entry, exit and solution string (e.g. 'SEESENNW')
+output_file = maze.txt
+
+# 'False|No|0 or True|Yes|1' Dead-Ends Possibility
+    # Note: Big mazes will have at least 2 dead-ends because of the 42 logo
+perfect     = True
+
+# '<int>' Generation Seed
+    # Note: Any re-generations will pick a random seed.
+seed        = 67
+
+# 'dfs or prims' Generation algorithm
+    # Note: 'Depth-First Search' uses one main branch
+    # Note: 'Prim's Algorithm' uses
+algorithm   = dfs
+
 ```
-Keys are not case-sensitive and white-space may be present.
-More detailed instructions can be found in the default `config.txt` file at the root of the repository.
+The whole config file (except the value of output_file) is not case-sensitive and may have white-spaces.
 
 ### Generation Algorithms
 | Algorithm | Description |

@@ -89,7 +89,8 @@ class Config:
                     "(e.g. 'false', 'yes', '0', ...).")
 
         assert self._algorithm is not None
-        if not (self._algorithm == "dfs" or self._algorithm == "prims"):
+        if not (self._algorithm.lower() == "dfs"
+                or self._algorithm.lower() == "prims"):
             return ("Invalid Generation Algorithm:\n"
                     "Algorithm must be recognized ('dfs', 'prims').")
 
@@ -126,13 +127,17 @@ class Config:
         Returns:
             None
         """
-        if ln.count("=") != 1:
+        if ln.strip() == "":
             return
+        if ln.count("=") != 1:
+            raise KeyError(f"\"{ln}\" does not "
+                           "follow KEY=Value format.")
         k, v = ln.split("=")
         an = f"_{k.strip().lower()}"
         rv = v.strip()
         if not rv:
-            return
+            raise KeyError(f"\"{k.strip()}\" does not "
+                           "follow KEY=Value format.")
 
         if hasattr(config, an):
             if an in ("_width", "_height", "_seed"):
