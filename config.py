@@ -41,7 +41,7 @@ class Config:
                     "Algorithm must be recognized ('dfs', 'prims').")
         return ""
 
-    def is_invalid(self, maze_gen: MazeGenerator) -> str:
+    def is_invalid(self) -> str:
         """Checks if provided values make sense
 
         Args:
@@ -76,12 +76,6 @@ class Config:
         if (self._entry[1] < 0 or self._exit[1] < 0):
             return ("Exceeding Maze Height:\n"
                     "Entry and exit y-coords must not be negative.")
-        if maze_gen._maze[self._entry[1]][self._entry[0]]._is_42:
-            return ("Invalid Entry Coordinates:\n"
-                    "Entry coords may not fall on 42 logo.")
-        if maze_gen._maze[self._exit[1]][self._exit[0]]._is_42:
-            return ("Invalid Exit Coordinates:\n"
-                    "Exit coords may not fall on 42 logo.")
 
         assert self._output_file is not None
         if not self._output_file:
@@ -98,6 +92,25 @@ class Config:
         if not (self._algorithm == "dfs" or self._algorithm == "prims"):
             return ("Invalid Generation Algorithm:\n"
                     "Algorithm must be recognized ('dfs', 'prims').")
+
+        return ""
+
+    def is_coords_invalid(self, maze_gen: MazeGenerator) -> str:
+        """Checks if entry and exit fall on logo
+
+        Args:
+            maze_gen (MazeGenerator): Maze class to check if entry/exit
+                falls into logo
+
+        Returns:
+            str: "" on success, len(str) > 0 for error
+        """
+        if maze_gen._maze[self._entry[1]][self._entry[0]]._is_42:
+            return ("Invalid Entry Coordinates:\n"
+                    "Entry coords may not fall on 42 logo.")
+        if maze_gen._maze[self._exit[1]][self._exit[0]]._is_42:
+            return ("Invalid Exit Coordinates:\n"
+                    "Exit coords may not fall on 42 logo.")
 
         return ""
 

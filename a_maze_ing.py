@@ -23,17 +23,23 @@ def generate_output(
     if c.is_pass_fail():
         print(f"{Color.ERR}{c.is_pass_fail()}{Color.END}")
         return (None, None)
+    if c.is_invalid():
+        print(f"{Color.ERR}{c.is_invalid()}{Color.END}")
+        return (None, None)
 
     if seed is not None:
         c._seed = seed
     assert c._width is not None and c._height is not None
     assert c._entry is not None and c._exit is not None
     assert c._seed is not None
-    mg = maze_generator.MazeGenerator(
-        c._width, c._height, c._entry, c._exit, c._seed
-    )
-    if c.is_invalid(mg):
-        print(f"{Color.ERR}{c.is_invalid(mg)}{Color.END}")
+    try:
+        mg = maze_generator.MazeGenerator(
+            c._width, c._height, c._entry, c._exit, c._seed
+        )
+    except ValueError:
+        return (None, None)
+    if c.is_coords_invalid(mg):
+        print(f"{Color.ERR}{c.is_coords_invalid(mg)}{Color.END}")
         return (None, None)
 
     assert c._algorithm is not None

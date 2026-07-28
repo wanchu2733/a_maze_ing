@@ -85,19 +85,25 @@ class MazeGenerator:
             None
         """
         self._width = width
+        if (self._width < 1):
+            raise ValueError("Width too small.")
         self._height = height
+        if (self._height < 1):
+            raise ValueError("Height too small.")
         self._entryr = entry[1]
         if self._entryr >= self._height or self._entryr < 0:
-            raise ValueError()
+            raise ValueError("Entry Y-Coord out of bounds.")
         self._entryc = entry[0]
         if self._entryc >= self._width or self._entryc < 0:
-            raise ValueError()
+            raise ValueError("Entry X-Coord out of bounds.")
         self._exitr = exit[1]
         if self._exitr >= self._height or self._exitr < 0:
-            raise ValueError()
+            raise ValueError("Exit Y-Coord out of bounds.")
         self._exitc = exit[0]
         if self._exitc >= self._width or self._exitc < 0:
-            raise ValueError()
+            raise ValueError("Exit X-Coord out of bounds.")
+        if (self._entryr == self._exitr) and (self._entryc == self._exitc):
+            raise ValueError("Exit and entry the same.")
         self._seed = seed
         self.rng = random.Random(self._seed)
         self._ani: list[tuple[int, int, str]] = []
